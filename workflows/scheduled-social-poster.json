@@ -1,0 +1,107 @@
+{
+  "name": "Scheduled Social Media Poster",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "0b7a61a3-8e40-489c-90ee-ed84bd8eeefc",
+      "name": "Daily Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "33b515ab-ca8d-44af-98b6-3e95a636ef8a",
+              "name": "text",
+              "type": "string",
+              "value": "=\ud83d\ude80 Automation tip of the day ({{ $now.toFormat('yyyy-MM-dd') }}): let robots do the repetitive work."
+            },
+            {
+              "id": "496c33e4-1cd0-433f-82b1-00c0356f8980",
+              "name": "channels",
+              "type": "array",
+              "value": "={{ ['twitter', 'linkedin'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "115faebc-4081-4831-b6b0-65a5dc1b03ca",
+      "name": "Compose Post",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        470,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.example.com/v1/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\"text\": $json.text, \"channels\": $json.channels} }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "ed4369a4-ff66-40ea-a56e-a7274f3e313f",
+      "name": "Post via API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        690,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Daily Schedule": {
+      "main": [
+        [
+          {
+            "node": "Compose Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose Post": {
+      "main": [
+        [
+          {
+            "node": "Post via API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "notes": "Runs daily at 09:00. Replace the HTTP node URL with your scheduler API (Buffer, Typefully, etc.)."
+  }
+}
