@@ -1,0 +1,99 @@
+{
+  "name": "AI FAQ Webhook Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "faq-ask",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "178a5515-38ef-480c-8f2b-69f021f0507e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "9d12a371-a3cc-4a92-88a8-651fb0af5ddf"
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a helpful FAQ assistant. Answer briefly and clearly."
+            },
+            {
+              "content": "={{ $json.question }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fcf7b812-40df-4c81-bb90-3e30b038ba3b",
+      "name": "Ask AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        470,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"answer\": $json.message.content} }}",
+        "options": {}
+      },
+      "id": "afc84a52-44a7-473c-8b12-ecb5937f49c8",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        690,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Ask AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask AI": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "notes": "POST {question} -> AI answer. Add your OpenAI credential on the 'Ask AI' node."
+  }
+}
