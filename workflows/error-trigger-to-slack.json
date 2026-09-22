@@ -1,0 +1,136 @@
+{
+ "name": "Error Alerts to Slack",
+ "nodes": [
+  {
+   "parameters": {},
+   "id": "82840553-f050-484a-8f98-692d040e9c0d",
+   "name": "On Error",
+   "type": "n8n-nodes-base.errorTrigger",
+   "typeVersion": 1,
+   "position": [
+    250,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "assignments": {
+     "assignments": [
+      {
+       "id": "f0e77c67-21dd-43e9-99d2-b31608716ba8",
+       "name": "workflow",
+       "type": "string",
+       "value": "={{ $json.workflow.name }}"
+      },
+      {
+       "id": "54787b33-f9f1-4f76-a52b-5c294207288c",
+       "name": "error",
+       "type": "string",
+       "value": "={{ $json.execution.error.message }}"
+      },
+      {
+       "id": "7337be1a-79d9-4788-9c6c-a8ee120f1bad",
+       "name": "execution_url",
+       "type": "string",
+       "value": "={{ $json.execution.url }}"
+      },
+      {
+       "id": "59d63309-2ba0-4577-90c9-02cef8eed6c8",
+       "name": "time",
+       "type": "string",
+       "value": "={{ $now.toISO() }}"
+      }
+     ]
+    },
+    "options": {}
+   },
+   "id": "cdb6f6e0-0e52-4cc6-9e4f-9d9508bc749c",
+   "name": "Format Error",
+   "type": "n8n-nodes-base.set",
+   "typeVersion": 3.4,
+   "position": [
+    470,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "resource": "message",
+    "operation": "post",
+    "channel": "#alerts",
+    "text": "=\ud83d\udea8 Workflow failed: {{ $json.workflow }}\nError: {{ $json.error }}\nExecution: {{ $json.execution_url }}\nTime: {{ $json.time }}",
+    "otherOptions": {}
+   },
+   "id": "d361c714-1371-4d38-8b28-82beb9a044f2",
+   "name": "Alert on Slack",
+   "type": "n8n-nodes-base.slack",
+   "typeVersion": 2.3,
+   "position": [
+    690,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "resource": "message",
+    "operation": "send",
+    "sendTo": "you@example.com",
+    "subject": "=n8n failure: {{ $json.workflow }}",
+    "emailType": "text",
+    "message": "=Workflow: {{ $json.workflow }}\nError: {{ $json.error }}\nExecution: {{ $json.execution_url }}\nTime: {{ $json.time }}",
+    "options": {}
+   },
+   "id": "5d13f95c-527d-4e37-9cc2-07203e6cf9bf",
+   "name": "Email Admin",
+   "type": "n8n-nodes-base.gmail",
+   "typeVersion": 2.1,
+   "position": [
+    910,
+    300
+   ]
+  }
+ ],
+ "connections": {
+  "On Error": {
+   "main": [
+    [
+     {
+      "node": "Format Error",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Format Error": {
+   "main": [
+    [
+     {
+      "node": "Alert on Slack",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Alert on Slack": {
+   "main": [
+    [
+     {
+      "node": "Email Admin",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "active": false,
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "pinData": {},
+ "meta": {
+  "notes": "Attach as the Error Workflow in any workflow's Settings. Needs Slack + Gmail credentials."
+ }
+}
