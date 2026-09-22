@@ -1,0 +1,151 @@
+{
+  "name": "Gmail AI Triage to Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {},
+        "options": {
+          "downloadAttachments": false
+        }
+      },
+      "id": "7cc4e6d4-a309-4499-ae01-703f9a8dbb5f",
+      "name": "New Emails",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Classify this email subject+snippet as URGENT or NORMAL. Reply with only one word."
+            },
+            {
+              "content": "={{ $json.subject }} {{ $json.snippet }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6459b317-7080-40e0-b342-9bd4ee0df640",
+      "name": "Classify with AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        470,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4526b130-77eb-49e5-a4b2-1ac6dd40b2c7",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "URGENT",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "58131cbb-ce06-46cc-916b-8ad9cb9cd54f",
+      "name": "If Urgent",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        690,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#alerts",
+        "text": "=\ud83d\udea8 Urgent email: {{ $('New Emails').item.json.subject }}",
+        "otherOptions": {}
+      },
+      "id": "d8696cae-00ac-4a2b-8a67-ebfd4d3e364c",
+      "name": "Alert on Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        910,
+        220
+      ]
+    }
+  ],
+  "connections": {
+    "New Emails": {
+      "main": [
+        [
+          {
+            "node": "Classify with AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify with AI": {
+      "main": [
+        [
+          {
+            "node": "If Urgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Urgent": {
+      "main": [
+        [
+          {
+            "node": "Alert on Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "notes": "New Gmail -> AI classifies urgency -> Slack alert if urgent. Add Gmail, OpenAI, Slack credentials."
+  }
+}
