@@ -56,8 +56,8 @@ curl -X POST https://YOUR-N8N-DOMAIN/webhook/new-lead \
 - [lead-capture-crm-automation](https://github.com/maticcretic-commits/lead-capture-crm-automation)
 - [social-media-auto-poster](https://github.com/maticcretic-commits/social-media-auto-poster)
 
-## Support My Work
+## ❤️ Support My Work
 
-If you find this project useful, consider supporting my work with a Bitcoin donation:
-
-`BC1Q6Q75K8ZJXVW7W02LMDPRPY6XX6QK4LZZ2RMVAY`
+> If you find this project useful, please consider supporting my work with a Bitcoin donation:
+>
+> **₿ `BC1Q6Q75K8ZJXVW7W02LMDPRPY6XX6QK4LZZ2RMVAY`**
