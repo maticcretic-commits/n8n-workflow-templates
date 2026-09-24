@@ -1,5 +1,10 @@
 # n8n Workflow Templates
 
+[![GitHub stars](https://img.shields.io/github/stars/maticcretic-commits/n8n-workflow-templates?style=social)](https://github.com/maticcretic-commits/n8n-workflow-templates/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/maticcretic-commits/n8n-workflow-templates)](https://github.com/maticcretic-commits/n8n-workflow-templates/commits/main)
+[![Cost: Free](https://img.shields.io/badge/cost-%E2%82%B90-brightgreen)](https://github.com/maticcretic-commits/n8n-workflow-templates)
+
+
 Import-ready [n8n](https://n8n.io) workflow templates for common automation gigs:
 AI responders, lead capture, scheduled posting, inbox triage, and error alerting.
 
